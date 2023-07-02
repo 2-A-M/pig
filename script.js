@@ -18,12 +18,19 @@ const btnXX = document.querySelector('.close-modalS');
 const sliderButton = document.querySelector('.slider');
 
 // Audio setup
-let audioElement = document.querySelector('#myAudio');
-let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-let track = audioCtx.createMediaElementSource(audioElement);
-let gainNode = audioCtx.createGain();
+let audioCtx;
+let track;
+let gainNode;
 
-track.connect(gainNode).connect(audioCtx.destination);
+function initAudioContext() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  audioCtx = new AudioContext();
+  audioElement = document.querySelector('#myAudio'); // Assign HTML element here
+  track = audioCtx.createMediaElementSource(audioElement);
+  gainNode = audioCtx.createGain();
+
+  track.connect(gainNode).connect(audioCtx.destination);
+}
 
 let scores, currentScore, activePlayer, playing;
 
@@ -202,9 +209,26 @@ output.innerHTML = slider.value; // Display the default slider value
 // Update the current slider value (each time you drag the slider handle)
 slider.oninput = function () {
   output.innerHTML = this.value;
-  gainNode.gain.value = this.value / 100;
+  if (gainNode) {
+    gainNode.gain.value = this.value / 100;
+  }
 };
 
+// Function to handle user gesture and start AudioContext
+function handleUserGesture() {
+  if (!audioCtx) {
+    initAudioContext();
+  }
+}
+
+// Attach the handleUserGesture function to all button click events
+btnRoll.addEventListener('click', handleUserGesture);
+btnNew.addEventListener('click', handleUserGesture);
+btnHold.addEventListener('click', handleUserGesture);
+btnSett.addEventListener('click', handleUserGesture);
+btnRules.addEventListener('click', handleUserGesture);
+btnX.addEventListener('click', handleUserGesture);
+btnXX.addEventListener('click', handleUserGesture);
 btnRoll.addEventListener('click', audioClick);
 btnNew.addEventListener('click', audioClick);
 btnHold.addEventListener('click', audioClick);

@@ -195,17 +195,6 @@ document.addEventListener('keydown', function (e) {
 });
 
 // Slider value
-
-var slider = document.getElementById('myRange');
-var output = document.getElementById('output');
-output.innerHTML = slider.value; // Display the default slider value
-
-// Update the current slider value (each time you drag the slider handle)
-slider.oninput = function () {
-  output.innerHTML = this.value;
-};
-
-// Slider value
 var slider = document.getElementById('myRange');
 var output = document.getElementById('output');
 output.innerHTML = slider.value; // Display the default slider value
@@ -215,12 +204,6 @@ slider.oninput = function () {
   output.innerHTML = this.value;
   gainNode.gain.value = this.value / 100;
 };
-
-// // Play sound when clicked
-// function audioClick() {
-//   let audio = new Audio('click.mp3');
-//   audio.play();
-// }
 
 btnRoll.addEventListener('click', audioClick);
 btnNew.addEventListener('click', audioClick);

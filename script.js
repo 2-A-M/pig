@@ -88,6 +88,16 @@ const switchPlayer = function () {
   activePlayer = activePlayer === 0 ? 1 : 0;
   player0El.classList.toggle('player--active');
   player1El.classList.toggle('player--active');
+
+  // if activePlayer is 1 (bot), disable buttons
+  if (activePlayer === 1) {
+    btnRoll.disabled = true;
+    btnHold.disabled = true;
+    botPlays();
+  } else {
+    btnRoll.disabled = false;
+    btnHold.disabled = false;
+  }
 };
 // Rolling dice functionality
 
@@ -236,3 +246,81 @@ btnSett.addEventListener('click', audioClick);
 btnRules.addEventListener('click', audioClick);
 btnX.addEventListener('click', audioClick);
 btnXX.addEventListener('click', audioClick);
+
+// Computer player
+
+function botPlays() {
+  // Bot will play after a delay
+  setTimeout(function () {
+    audioClick(); // Play audio
+    // Bot rolls the dice
+    const dice = Math.trunc(Math.random() * 6) + 1;
+    diceEl.classList.remove('hidden');
+    diceEl.src = `dice-${dice}.png`;
+
+    if (dice !== 1) {
+      currentScore += dice;
+      document.getElementById(`current--${activePlayer}`).textContent =
+        currentScore;
+
+      // If current score and total score are equal or greater than 100, bot holds
+      if (currentScore + scores[activePlayer] >= 100) {
+        holdScore();
+      } else if (currentScore >= 10 && currentScore < 15) {
+        // Between 10 and 15, bot has a 30% chance of holding
+        let decision = Math.random() < 0.3;
+        if (decision) {
+          holdScore();
+        } else {
+          botPlays();
+        }
+      } else if (currentScore >= 15 && currentScore <= 25) {
+        // Between 15 and 25, bot has a 70% chance of holding
+        let decision = Math.random() < 0.7;
+        if (decision) {
+          holdScore();
+        } else {
+          botPlays();
+        }
+      } else if (currentScore > 25 && currentScore <= 30) {
+        // Between 25 and 30, bot has a 30% chance of holding
+        let decision = Math.random() < 0.3;
+        if (decision) {
+          holdScore();
+        } else {
+          botPlays();
+        }
+      } else if (currentScore > 30) {
+        // If current score is more than 30, bot holds
+        holdScore();
+      } else {
+        botPlays();
+      }
+    } else {
+      // If dice is 1, switch to the player
+      switchPlayer();
+    }
+  }, 1000); // Bot will make a move every 1 second
+}
+
+function holdScore() {
+  audioClick(); // Play audio
+  scores[activePlayer] += currentScore;
+  document.getElementById(`score--${activePlayer}`).textContent =
+    scores[activePlayer];
+
+  if (scores[activePlayer] >= 100) {
+    // Bot wins the game
+    playing = false;
+    diceEl.classList.add('hidden');
+    document
+      .querySelector(`.player--${activePlayer}`)
+      .classList.add('player--winner');
+    document
+      .querySelector(`.player--${activePlayer}`)
+      .classList.remove('player--active');
+  } else {
+    // Switch to the player
+    switchPlayer();
+  }
+}

@@ -32,7 +32,7 @@ function initAudioContext() {
   track.connect(gainNode).connect(audioCtx.destination);
 }
 
-let scores, currentScore, activePlayer, playing;
+let scores, currentScore, activePlayer, playing, botTimer;
 
 const init = function () {
   score0El.textContent = 0;
@@ -51,6 +51,16 @@ const init = function () {
   player1El.classList.remove('player--winner');
   player0El.classList.add('player--active');
   player1El.classList.remove('player--active');
+
+  // Enable buttons for Player 0 and disable for Player 1
+  btnRoll.disabled = false;
+  btnHold.disabled = false;
+
+  // If bot is playing, stop it
+  if (botTimer) {
+    clearTimeout(botTimer);
+    botTimer = null;
+  }
 };
 init();
 
@@ -251,7 +261,7 @@ btnXX.addEventListener('click', audioClick);
 
 function botPlays() {
   // Bot will play after a delay
-  setTimeout(function () {
+  botTimer = setTimeout(function () {
     audioClick(); // Play audio
     // Bot rolls the dice
     const dice = Math.trunc(Math.random() * 6) + 1;
